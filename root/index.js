@@ -1,5 +1,6 @@
 const startTimestamp = new Date().getTime();
 // importing modules
+const authenticateUserMiddleware = require('@nds-core/client-token-manager-lib');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
@@ -7,7 +8,8 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const path = require('path');
-const authenticateUserMiddleware = require('./middlewares/authenticate');
+const { validateSchemaMiddleware } = require('./middlewares/validateBodyData');
+const JSONschemaCore = require('./models/JSONschemaCore');
 
 // configuring dotenv
 require('dotenv').config();
@@ -24,6 +26,8 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 var generatedRouters = []
+var generatedSchema = {}
+var generatedRoutes = {}
 
 // using body-parser middleware
 app.use(cors());
@@ -31,12 +35,31 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // authenticating routes
-app.use('/api', authenticateUserMiddleware);
+app.use('/api', authenticateUserMiddleware.default);
+app.use('/api', validateSchemaMiddleware(generatedSchema, generatedRoutes))
 
 const routers = require('./routers');
 
 async function createRoutes (route, Router) {
-    Router[route.method](route.path, [...route.middleware], route.controller);
+    const schemaKey = route.inputSchema.key;
+    const version = route.inputSchema.version;
+    const schemaIdentifier = `${schemaKey}_${version}`;
+
+    const schemaResponse = await JSONschemaCore.findOne({ key: schemaKey, version: version });
+
+    if (!generatedSchema[schemaIdentifier]) {
+        generatedSchema[schemaIdentifier] = schemaResponse.schema;
+    }
+    
+    if (!schemaResponse) {
+        throw new Error('Schema not found');
+    }
+
+    if (!generatedRoutes[route.path]) {
+        generatedRoutes[route.path] = route;
+    }
+
+    Router[route.method](route.path, [...route.middleware], route.service);
 }
 
 async function createRouters (router) {
@@ -98,6 +121,7 @@ const startServer = async () => {
         const port = process.env.PORT || 3000;
         app.listen(port, () => {
             console.log(`Listening to port ${port}`);
+            console.log(`URL: http://localhost:${port}`)
             fetchRoutes(generatedRouters);
             const endTimestamp = new Date().getTime();
             const timeTaken = endTimestamp - startTimestamp;

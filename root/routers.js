@@ -1,7 +1,7 @@
 const routers = [
     {
-        path: '/api/CRUD',
-        router: require('./routes/')
+        path: '/api/applicationModel',
+        router: require('./routes/applicationModelCRUD')
     }
 ]
 
