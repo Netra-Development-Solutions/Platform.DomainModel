@@ -1,11 +1,16 @@
 pipeline {
     agent any
+
+    environment {
+        GITHUB_URL = 'https://github.com/Netra-Development-Solutions/Platform.DomainModel'
+        GITHUB_BRANCH = 'RELEASE'   
+    }
     
     stages {
         stage("Code") {
             steps {
                 echo "Cloning the code from GitHub"
-                git branch: 'DEVELOPMENT', url: 'https://github.com/Netra-Development-Solutions/Platform.DomainModel'
+                git branch: "${GITHUB_BRANCH}", url: "${GITHUB_URL}"
             }
         }
         stage("Install Dependencies") {
