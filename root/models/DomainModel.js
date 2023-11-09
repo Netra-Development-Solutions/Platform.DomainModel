@@ -17,7 +17,11 @@ const DomainModelSchema = new mongoose.Schema({
     schema: {
         type: Object,
         required: true
-    }
+    },
+    version: {
+        type: Number,
+        required: true
+    },
 });
 
 const DomainModel = mongoose.model('DomainModel', DomainModelSchema);
