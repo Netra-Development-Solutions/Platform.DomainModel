@@ -4,7 +4,6 @@ const { v4: uuidv4 } = require('uuid');
 const saveModel = async (req, res) => {
     try {
         const payload = req.body;
-        payload._id = uuidv4();
         
         const applicationModel = new ApplicationModel(payload);
         await applicationModel.save();

@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 
 const DomainModelSchema = new mongoose.Schema({
-    _id: {
-        type: String,
-        required: true
-    },
     application: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ApplicationModel',
@@ -22,6 +18,8 @@ const DomainModelSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+}, {
+    strict: false
 });
 
 const DomainModel = mongoose.model('DomainModel', DomainModelSchema);
