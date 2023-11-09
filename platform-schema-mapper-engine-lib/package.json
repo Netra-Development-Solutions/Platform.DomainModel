@@ -1,6 +1,6 @@
 {
-  "name": "platform-schema-mapper-engine-lib",
-  "version": "1.0.1",
+  "name": "@nds-core/platform-schema-mapper-engine-lib",
+  "version": "1.0.2",
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
