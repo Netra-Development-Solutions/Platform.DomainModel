@@ -5,6 +5,9 @@ const routers = [
     }, {
         path: '/api/domainModel',
         router: require('./routes/domainModelCRUD')
+    }, {
+        path: '/api/collection',
+        router: require('./routes/collectionCRUD')
     }
 ]
 
